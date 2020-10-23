@@ -26,14 +26,14 @@ public class MsgTemplate implements Serializable {
     private long id;
     private String appid;
     private String templateId;
-    @TableField(value = "`name`")
+    @TableField(value = "name")
     private String name;
     private String title;
     private String content;
     private JSONArray data;
     private String url;
     private JSONObject miniprogram;
-    @TableField(value = "`status`")
+    @TableField(value = "status")
     private boolean status;
     private Date updateTime;
     public MsgTemplate() {

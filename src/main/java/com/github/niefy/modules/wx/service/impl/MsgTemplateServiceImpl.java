@@ -3,6 +3,7 @@ package com.github.niefy.modules.wx.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.niefy.common.nokey.AbstractNoahServiceImpl;
 import com.github.niefy.modules.wx.dao.MsgTemplateMapper;
 import com.github.niefy.common.utils.PageUtils;
 import com.github.niefy.common.utils.Query;
@@ -12,6 +13,7 @@ import com.github.niefy.modules.wx.service.MsgTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 
 
 @Service("msgTemplateService")
-public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateMapper, MsgTemplate> implements MsgTemplateService {
+public class MsgTemplateServiceImpl extends AbstractNoahServiceImpl<MsgTemplateMapper, MsgTemplate> implements MsgTemplateService {
     @Autowired
     private WxMpService wxService;
 
@@ -57,7 +59,12 @@ public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateMapper, MsgTe
     public void syncWxTemplate(String appid) throws WxErrorException {
         List<WxMpTemplate> wxMpTemplateList= wxService.getTemplateMsgService().getAllPrivateTemplate();
         List<MsgTemplate> templates = wxMpTemplateList.stream().map(item->new MsgTemplate(item,appid)).collect(Collectors.toList());
-        this.saveBatch(templates);
+        this.remove(new QueryWrapper<MsgTemplate>().eq("appid", appid));
+        if(!CollectionUtils.isEmpty(templates)) {
+            this.saveOrUpdateBatch(templates);
+        }
+
+
     }
 
 }

@@ -1,6 +1,7 @@
 package com.github.niefy.config;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import com.github.niefy.common.nokey.NoahSqlInjector;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,6 +18,10 @@ public class MybatisPlusConfig {
     @Bean
     public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();
+    }
+    @Bean
+    public NoahSqlInjector logicSqlInjector() {
+        return new NoahSqlInjector();
     }
 
 }

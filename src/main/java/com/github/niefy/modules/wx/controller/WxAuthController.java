@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.api.WxOAuth2Service;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public class WxAuthController {
                           @CookieValue String appid, @RequestBody WxH5OuthrizeForm form) {
         try {
             this.wxMpService.switchoverTo(appid);
-            WxMpOAuth2AccessToken token = wxMpService.oauth2getAccessToken(form.getCode());
+            WxMpOAuth2AccessToken token = wxMpService.getOAuth2Service().getAccessToken(form.getCode());
             String openid = token.getOpenId();
             CookieUtil.setCookie(response, "openid", openid, 365 * 24 * 60 * 60);
             String openidToken = MD5Util.getMd5AndSalt(openid);
@@ -78,8 +79,9 @@ public class WxAuthController {
                             @CookieValue String appid,  @RequestBody WxH5OuthrizeForm form) {
         try {
             this.wxMpService.switchoverTo(appid);
-            WxMpOAuth2AccessToken token = wxMpService.oauth2getAccessToken(form.getCode());
-            WxMpUser userInfo = wxMpService.oauth2getUserInfo(token,"zh_CN");
+            WxOAuth2Service wxOAuth2Service = wxMpService.getOAuth2Service();
+            WxMpOAuth2AccessToken token = wxOAuth2Service.getAccessToken(form.getCode());
+            WxMpUser userInfo = wxOAuth2Service.getUserInfo(token,"zh_CN");
             String openid = userInfo.getOpenId();
             CookieUtil.setCookie(response, "openid", openid, 365 * 24 * 60 * 60);
             String openidToken = MD5Util.getMd5AndSalt(openid);

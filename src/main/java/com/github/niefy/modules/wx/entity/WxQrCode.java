@@ -52,6 +52,11 @@ public class WxQrCode implements Serializable {
      */
     private Date createTime;
 
+    /**
+     * 二维码业务场景
+     */
+    private String type;
+
     public WxQrCode() {
     }
 
@@ -60,5 +65,6 @@ public class WxQrCode implements Serializable {
         this.isTemp = form.getIsTemp();
         this.sceneStr = form.getSceneStr();
         this.createTime = new Date();
+        this.type = form.getType();
     }
 }

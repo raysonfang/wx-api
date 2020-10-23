@@ -2,6 +2,7 @@ package com.github.niefy.modules.wx.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.niefy.common.utils.CommonUtil;
 import com.github.niefy.config.TaskExcutor;
 import com.github.niefy.modules.wx.entity.MsgReplyRule;
 import com.github.niefy.modules.wx.entity.WxMsg;
@@ -17,6 +18,7 @@ import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,15 +55,29 @@ public class MsgReplyServiceImpl implements MsgReplyService {
     @Override
     public boolean tryAutoReply(String appid, boolean exactMatch, String toUser, String keywords) {
         try {
-            List<MsgReplyRule> rules = msgReplyRuleService.getMatchedRules(appid,exactMatch, keywords);
+            String[] sceneKey = keywords.split("_");
+            String tableId = "";
+            if("qrscene".equalsIgnoreCase(sceneKey[0])) {
+                JSONObject jsonObject = JSON.parseObject(sceneKey[1]);
+                tableId = jsonObject.getString("tableId");
+                keywords = "xcx-order";
+            }
+            List<MsgReplyRule> rules = msgReplyRuleService.getMatchedRules(appid, exactMatch, keywords);
             if (rules.isEmpty()) {
                 return false;
             }
             long delay = 0;
             for (MsgReplyRule rule : rules) {
+                if(!StringUtils.isEmpty(tableId) && WxConsts.KefuMsgType.MINIPROGRAMPAGE.equals(rule.getReplyType())) {
+                    JSONObject json = JSON.parseObject(rule.getReplyContent());
+                    String pagepath = json.getString("pagepath");
+                    pagepath = CommonUtil.parse(pagepath, tableId, System.currentTimeMillis() + "");
+                    json.put("pagepath", pagepath);
+                    rule.setReplyContent(json.toJSONString());
+                }
                 TaskExcutor.schedule(() -> {
                     wxMpService.switchover(appid);
-                    this.reply(toUser,rule.getReplyType(),rule.getReplyContent());
+                    this.reply(toUser,rule.getReplyType(), rule.getReplyContent());
                 }, delay, TimeUnit.MILLISECONDS);
                 delay += autoReplyInterval;
             }

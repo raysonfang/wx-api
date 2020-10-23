@@ -14,4 +14,5 @@ public class WxQrCodeForm {
     @Max(value = 2592000, message = "过期时间不得超过30天")
     private Integer expireSeconds;
     private Boolean isTemp = true;
+    private String type;
 }

@@ -2,7 +2,9 @@ package com.github.niefy.modules.wx.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.niefy.common.utils.DataSourceUtils;
 import com.github.niefy.modules.wx.service.MsgReplyRuleService;
 import com.github.niefy.common.utils.PageUtils;
 import com.github.niefy.common.utils.Query;
@@ -26,16 +28,34 @@ public class MsgReplyRuleServiceImpl extends ServiceImpl<MsgReplyRuleMapper, Msg
     public PageUtils queryPage(Map<String, Object> params) {
         String matchValue = (String) params.get("matchValue");
         String appid = (String) params.get("appid");
-        IPage<MsgReplyRule> page = this.page(
-            new Query<MsgReplyRule>().getPage(params),
-            new QueryWrapper<MsgReplyRule>()
+        if(DataSourceUtils.isSQLServer()) {
+            Page<MsgReplyRule> pager = new Page<>(Long.parseLong((String)params.get("page")), Long.parseLong((String)params.get("limit")), false);
+            IPage<MsgReplyRule> page = this.page(
+                    pager,
+                    new QueryWrapper<MsgReplyRule>()
+                            .eq(!StringUtils.isEmpty(appid), "appid", appid)
+                            .or()
+                            .apply("appid is null or appid = ''")
+                            .like(!StringUtils.isEmpty(matchValue), "match_value", matchValue)
+                            .orderByDesc("update_time")
+            );
+            page.setTotal(msgReplyRuleMapper.selectCount(new QueryWrapper<MsgReplyRule>()
                     .eq(!StringUtils.isEmpty(appid), "appid", appid)
                     .or()
                     .apply("appid is null or appid = ''")
                     .like(!StringUtils.isEmpty(matchValue), "match_value", matchValue)
-                    .orderByDesc("update_time")
+                    ));
+            return new PageUtils(page);
+        }
+        IPage<MsgReplyRule> page = this.page(
+                new Query<MsgReplyRule>().getPage(params),
+                new QueryWrapper<MsgReplyRule>()
+                        .eq(!StringUtils.isEmpty(appid), "appid", appid)
+                        .or()
+                        .apply("appid is null or appid = ''")
+                        .like(!StringUtils.isEmpty(matchValue), "match_value", matchValue)
+                        .orderByDesc("update_time")
         );
-
         return new PageUtils(page);
     }
 

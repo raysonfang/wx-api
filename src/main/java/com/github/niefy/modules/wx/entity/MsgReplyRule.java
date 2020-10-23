@@ -32,9 +32,9 @@ public class MsgReplyRule implements Serializable {
     private String replyType;
     @NotEmpty(message = "回复内容不得为空")
     private String replyContent;
-    @TableField(value = "`status`")
+    @TableField(value = "status")
     private boolean status;
-    @TableField(value = "`desc`")
+    @TableField(value = "[desc]")
     private String desc;
     private Time effectTimeStart;
     private Time effectTimeEnd;

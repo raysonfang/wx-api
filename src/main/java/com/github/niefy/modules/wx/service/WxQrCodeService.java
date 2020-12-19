@@ -1,5 +1,6 @@
 package com.github.niefy.modules.wx.service;
 
+import cn.binarywang.wx.miniapp.bean.WxMaQrcode;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.niefy.common.utils.PageUtils;
 import com.github.niefy.modules.wx.entity.WxQrCode;
@@ -33,5 +34,7 @@ public interface WxQrCodeService extends IService<WxQrCode> {
      * @return
      */
     WxMpQrCodeTicket createQrCode(String appid, WxQrCodeForm form) throws WxErrorException;
+    
+    WxMaQrcode createMaQrcode(String appid, WxQrCodeForm form) throws WxErrorException;
 }
 

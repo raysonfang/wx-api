@@ -56,6 +56,11 @@ public class WxQrCode implements Serializable {
      * 二维码业务场景
      */
     private String type;
+    
+    /**
+     * 二维码 字节
+     */
+    private byte[] codeByte;
 
     public WxQrCode() {
     }

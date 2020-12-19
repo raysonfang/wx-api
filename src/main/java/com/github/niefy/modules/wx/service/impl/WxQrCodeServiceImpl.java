@@ -1,5 +1,8 @@
 package com.github.niefy.modules.wx.service.impl;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaQrcode;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.github.niefy.modules.wx.dao.WxQrCodeMapper;
 import com.github.niefy.modules.wx.entity.WxQrCode;
 import com.github.niefy.modules.wx.form.WxQrCodeForm;
@@ -25,6 +28,8 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class WxQrCodeServiceImpl extends ServiceImpl<WxQrCodeMapper, WxQrCode> implements WxQrCodeService {
     private final WxMpService wxService;
+    
+    private final WxMaService wxMaService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -65,5 +70,20 @@ public class WxQrCodeServiceImpl extends ServiceImpl<WxQrCodeMapper, WxQrCode> i
         this.save(wxQrCode);
         return ticket;
     }
-
+    @Override
+    public WxMaQrcode createMaQrcode(String appid, WxQrCodeForm form) throws WxErrorException {
+        form.setIsTemp(false);
+        QueryWrapper<WxQrCode> qrcodeQueryWrapper = new QueryWrapper<WxQrCode>();
+        qrcodeQueryWrapper.eq("scene_str", form.getSceneStr());
+        Integer count = baseMapper.selectCount(qrcodeQueryWrapper);
+        if (count > 0) {
+            return null;
+        }
+        byte[] qrcode = wxMaService.getQrcodeService().createWxaCodeUnlimitBytes(form.getSceneStr(), form.getPagePath(), 430, true, null, false);
+        WxQrCode wxQrCode = new WxQrCode(form, appid);
+        wxQrCode.setCodeByte(qrcode);
+        this.save(wxQrCode);
+        
+        return null;
+    }
 }

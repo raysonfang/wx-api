@@ -1,5 +1,7 @@
 package com.github.niefy.modules.wx.entity;
 
+import cn.binarywang.wx.miniapp.config.impl.WxMaDefaultConfigImpl;
+import cn.binarywang.wx.miniapp.constant.WxMaConstants;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -11,7 +13,7 @@ import java.io.Serializable;
 
 /**
  * 公众号账号
- * 
+ *
  * @author niefy
  * @date 2020-06-17 13:56:51
  */
@@ -60,6 +62,16 @@ public class WxAccount implements Serializable {
 		configStorage.setToken(token);
 		configStorage.setAesKey(aesKey);
 		return configStorage;
+	}
+	
+	public WxMaDefaultConfigImpl toWxMaConfigStorage() {
+		WxMaDefaultConfigImpl wxMaDefaultConfig = new WxMaDefaultConfigImpl();
+		wxMaDefaultConfig.setAppid(appid);
+		wxMaDefaultConfig.setSecret(secret);
+		wxMaDefaultConfig.setToken(token);
+		wxMaDefaultConfig.setAesKey(aesKey);
+		wxMaDefaultConfig.setMsgDataFormat(WxMaConstants.MsgDataFormat.JSON);
+		return wxMaDefaultConfig;
 	}
 
 }

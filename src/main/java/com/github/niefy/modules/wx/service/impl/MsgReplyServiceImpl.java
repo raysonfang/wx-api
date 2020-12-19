@@ -39,6 +39,9 @@ public class MsgReplyServiceImpl implements MsgReplyService {
     WxMpService wxMpService;
     @Value("${wx.mp.autoReplyInterval:1000}")
     Long autoReplyInterval;
+
+    @Value("${wx.mp.cardExpire:7200000}")
+    Long wxmaCardExpire;
     @Autowired
     WxMsgService wxMsgService;
 
@@ -71,7 +74,7 @@ public class MsgReplyServiceImpl implements MsgReplyService {
                 if(!StringUtils.isEmpty(tableId) && WxConsts.KefuMsgType.MINIPROGRAMPAGE.equals(rule.getReplyType())) {
                     JSONObject json = JSON.parseObject(rule.getReplyContent());
                     String pagepath = json.getString("pagepath");
-                    pagepath = CommonUtil.parse(pagepath, tableId, System.currentTimeMillis() + "");
+                    pagepath = CommonUtil.parse(pagepath, tableId, System.currentTimeMillis() + "", wxmaCardExpire + "");
                     json.put("pagepath", pagepath);
                     rule.setReplyContent(json.toJSONString());
                 }

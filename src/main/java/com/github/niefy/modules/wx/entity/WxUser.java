@@ -1,5 +1,6 @@
 package com.github.niefy.modules.wx.entity;
 
+import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -9,6 +10,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.github.niefy.common.utils.Json;
 import lombok.Data;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
+import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTimeUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
@@ -68,7 +71,21 @@ public class WxUser implements Serializable {
 			this.qrSceneStr= StringUtils.isEmpty(qrScene) ? wxMpUser.getQrSceneStr() : qrScene;
 		}
     }
-
+    
+    public WxUser(WxMaUserInfo wxMaUserInfo) {
+        this.openid = wxMaUserInfo.getOpenId();
+        this.appid = wxMaUserInfo.getWatermark().getAppid();
+        this.subscribe = true;
+        this.nickname = wxMaUserInfo.getNickName();
+        this.city = wxMaUserInfo.getCity();
+        this.sex = Integer.parseInt(wxMaUserInfo.getGender());
+        this.headimgurl = wxMaUserInfo.getAvatarUrl();
+        this.province = wxMaUserInfo.getProvince();
+        this.unionid = wxMaUserInfo.getUnionId();
+        this.subscribeScene = "miniapp";
+        this.subscribeTime = new Date(Long.parseLong(wxMaUserInfo.getWatermark().getTimestamp()));
+    }
+    
     @Override
     public String toString() {
         return Json.toJsonString(this);

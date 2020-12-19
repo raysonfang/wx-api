@@ -15,4 +15,8 @@ public class WxQrCodeForm {
     private Integer expireSeconds;
     private Boolean isTemp = true;
     private String type;
+    /**
+     * 小程序 页面路径
+     */
+    private String pagePath;
 }

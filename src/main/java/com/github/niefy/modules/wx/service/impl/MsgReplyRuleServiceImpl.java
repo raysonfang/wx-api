@@ -56,6 +56,7 @@ public class MsgReplyRuleServiceImpl extends ServiceImpl<MsgReplyRuleMapper, Msg
                         .like(!StringUtils.isEmpty(matchValue), "match_value", matchValue)
                         .orderByDesc("update_time")
         );
+
         return new PageUtils(page);
     }
 
@@ -113,7 +114,7 @@ public class MsgReplyRuleServiceImpl extends ServiceImpl<MsgReplyRuleMapper, Msg
     public List<MsgReplyRule> getMatchedRules(String appid, boolean exactMatch, String keywords) {
         LocalTime now = LocalTime.now();
         return this.getValidRules().stream()
-                .filter(rule->StringUtils.isEmpty(rule.getAppid()) || appid.equals(rule.getAppid())) // 检测是否是对应公众号的规则，如果appid为空则为通用规则
+                .filter(rule->!StringUtils.hasText(rule.getAppid()) || appid.equals(rule.getAppid())) // 检测是否是对应公众号的规则，如果appid为空则为通用规则
                 .filter(rule->null == rule.getEffectTimeStart() || rule.getEffectTimeStart().toLocalTime().isBefore(now))// 检测是否在有效时段，effectTimeStart为null则一直有效
                 .filter(rule->null == rule.getEffectTimeEnd() || rule.getEffectTimeEnd().toLocalTime().isAfter(now)) // 检测是否在有效时段，effectTimeEnd为null则一直有效
                 .filter(rule->isMatch(exactMatch || rule.isExactMatch(),rule.getMatchValue().split(","),keywords)) //检测是否符合匹配规则
@@ -131,7 +132,7 @@ public class MsgReplyRuleServiceImpl extends ServiceImpl<MsgReplyRuleMapper, Msg
      * @return
      */
     public static boolean isMatch(boolean exactMatch, String[] ruleWords, String checkWords) {
-        if (StringUtils.isEmpty(checkWords)) {
+        if (!StringUtils.hasText(checkWords)) {
             return false;
         }
         for (String words : ruleWords) {

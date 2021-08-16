@@ -74,6 +74,7 @@ public class TemplateMsgServiceImpl implements TemplateMsgService {
             filterParams=new HashMap<>(8);
         }
 		long currentPage=1L,totalPages=Long.MAX_VALUE;
+        filterParams.put("appid",appid);
 		filterParams.put("limit","500");
 		while (currentPage<=totalPages){
 			filterParams.put("page",String.valueOf(currentPage));

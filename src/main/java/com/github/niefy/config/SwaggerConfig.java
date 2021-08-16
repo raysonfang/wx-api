@@ -10,6 +10,7 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
@@ -41,7 +42,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
             .build();
     }
 
-    private List<ApiKey> security() {
+    private List<SecurityScheme> security() {
         return newArrayList(
             new ApiKey("token", "token", "header")
         );

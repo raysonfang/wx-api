@@ -46,7 +46,7 @@ public class WxQrCodeManageController {
     @ApiOperation(value = "创建带参二维码ticket",notes = "ticket可以换取二维码图片")
     public R createTicket(@CookieValue String appid,@RequestBody WxQrCodeForm form) throws WxErrorException {
         if (wxMaService.switchover(appid)) {
-            WxMaQrcode wxQrCode = wxQrCodeService.createMaQrcode(appid, form);
+            WxQrCode wxQrCode = wxQrCodeService.createMaQrcode(appid, form);
             return R.ok().put(wxQrCode);
         }
         wxMpService.switchoverTo(appid);
@@ -60,7 +60,7 @@ public class WxQrCodeManageController {
     @GetMapping("/list")
     @RequiresPermissions("wx:wxqrcode:list")
     @ApiOperation(value = "列表")
-    public R list(@CookieValue String appid,@RequestParam Map<String, Object> params) {
+    public R list(@CookieValue String appid, @RequestParam Map<String, Object> params) {
         params.put("appid",appid);
         PageUtils page = wxQrCodeService.queryPage(params);
 

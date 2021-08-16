@@ -35,6 +35,6 @@ public interface WxQrCodeService extends IService<WxQrCode> {
      */
     WxMpQrCodeTicket createQrCode(String appid, WxQrCodeForm form) throws WxErrorException;
     
-    WxMaQrcode createMaQrcode(String appid, WxQrCodeForm form) throws WxErrorException;
+    WxQrCode createMaQrcode(String appid, WxQrCodeForm form) throws WxErrorException;
 }
 

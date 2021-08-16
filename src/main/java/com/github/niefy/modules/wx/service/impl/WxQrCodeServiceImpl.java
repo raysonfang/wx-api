@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -71,19 +72,19 @@ public class WxQrCodeServiceImpl extends ServiceImpl<WxQrCodeMapper, WxQrCode> i
         return ticket;
     }
     @Override
-    public WxMaQrcode createMaQrcode(String appid, WxQrCodeForm form) throws WxErrorException {
+    public WxQrCode createMaQrcode(String appid, WxQrCodeForm form) throws WxErrorException {
         form.setIsTemp(false);
         QueryWrapper<WxQrCode> qrcodeQueryWrapper = new QueryWrapper<WxQrCode>();
         qrcodeQueryWrapper.eq("scene_str", form.getSceneStr());
-        Integer count = baseMapper.selectCount(qrcodeQueryWrapper);
-        if (count > 0) {
-            return null;
+        WxQrCode wxQrCode1 = baseMapper.selectOne(qrcodeQueryWrapper);
+        if (Objects.nonNull(wxQrCode1)) {
+            return wxQrCode1;
         }
         byte[] qrcode = wxMaService.getQrcodeService().createWxaCodeUnlimitBytes(form.getSceneStr(), form.getPagePath(), 430, true, null, false);
         WxQrCode wxQrCode = new WxQrCode(form, appid);
         wxQrCode.setCodeByte(qrcode);
         this.save(wxQrCode);
         
-        return null;
+        return wxQrCode;
     }
 }

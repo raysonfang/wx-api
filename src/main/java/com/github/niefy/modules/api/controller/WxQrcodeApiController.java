@@ -1,7 +1,9 @@
 package com.github.niefy.modules.api.controller;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
 import com.github.niefy.common.annotation.SysLog;
 import com.github.niefy.common.utils.R;
+import com.github.niefy.modules.wx.entity.WxQrCode;
 import com.github.niefy.modules.wx.form.WxQrCodeForm;
 import com.github.niefy.modules.wx.service.WxQrCodeService;
 import io.swagger.annotations.Api;
@@ -29,7 +31,8 @@ public class WxQrcodeApiController {
     private WxQrCodeService wxQrCodeService;
     @Autowired
     private WxMpService wxMpService;
-
+    @Autowired
+    private WxMaService wxMaService;
     /**
      * 创建带参二维码ticket
      */
@@ -37,6 +40,10 @@ public class WxQrcodeApiController {
     @ApiOperation(value = "创建带参二维码ticket",notes = "ticket可以换取二维码图片")
     @SysLog("第三方创建带参二维码")
     public R createTicket(String appid, @RequestBody WxQrCodeForm form) throws WxErrorException {
+        if (wxMaService.switchover(appid)) {
+            WxQrCode wxQrCode = wxQrCodeService.createMaQrcode(appid, form);
+            return R.ok().put(wxQrCode);
+        }
         wxMpService.switchoverTo(appid);
         WxMpQrCodeTicket ticket = wxQrCodeService.createQrCode(appid,form);
         return R.ok().put(ticket);
